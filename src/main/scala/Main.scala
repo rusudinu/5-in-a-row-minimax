@@ -1,6 +1,5 @@
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
-import constant._
 
 object Main {
   type Line = List[Player]
