@@ -5,20 +5,6 @@ object Main {
   type Line = List[Player]
   type Board = List[Line]
 
-  val welcomeMessage = "Welcome to the 5 in a row game!"
-  val boardSizePrompt = "Please enter the board size: "
-  val boardSizeError = "The board size must be at least 5."
-  val movePrompt = "Please enter your move: "
-  val outOfBoundsError = "The position that you entered is out of bounds. Please enter another one."
-  val notFreeError = "The position that you entered is not free. Please enter another one."
-  val playerOneWon = "Player One won!"
-  val playerTwoWon = "Player Two won!"
-  val draw = "It's a draw or I wrote bad code!"
-
-  def profileID: Int = 134930
-
-  def newline = "\n"
-
   // creates a board from a string
   def makeBoard(s: String): Board = {
     def toPos(c: Char): Player =
@@ -28,7 +14,7 @@ object Main {
         case _ => Empty
       }
 
-    s.split(newline).toList.map(_.toList.map(toPos))
+    s.split(Constants.newline).toList.map(_.toList.map(toPos))
   }
 
   // checks if the position (x,y) board b is free
@@ -51,7 +37,7 @@ object Main {
         case _ => '.'
       }
 
-    b.map(_.map(toChar).mkString).mkString(newline)
+    b.map(_.map(toChar).mkString).mkString(Constants.newline)
   }
 
   // Returns a list of columns from a board
@@ -119,12 +105,16 @@ object Main {
     List.fill(size)(List.fill(size)(Empty))
   }
 
+  def predictNextBestMove(p: Player)(b: Board): Board = {
+    next(p)(b).head
+  }
+
   def game(): Unit = {
-    print(welcomeMessage + newline + boardSizePrompt)
+    print(Constants.welcomeMessage + Constants.newline + Constants.boardSizePrompt)
     val boardSize = readLine().toInt
 
-    if (boardSize < 5) {
-      println(boardSizeError)
+    if (boardSize < 5 && boardSize < Constants.maxBoardSize) {
+      println(Constants.boardSizeError)
       game()
     }
 
@@ -132,29 +122,30 @@ object Main {
 
     while (!winner(One)(board) && !winner(Two)(board)) {
       breakable {
-        print(movePrompt)
+        print(Constants.movePrompt)
         val Array(x, y) = readLine().split(" ").map(_.toInt)
         if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
-          println(outOfBoundsError)
+          println(Constants.outOfBoundsError)
           println(show(board))
           break
         }
         if (!isFree(x, y, board)) {
-          println(notFreeError)
+          println(Constants.notFreeError)
           println(show(board))
           break
         }
         board = update(One)(x, y, board)
+        board = predictNextBestMove(Two)(board)
         println(show(board))
       }
     }
 
     if (winner(One)(board)) {
-      println(playerOneWon)
+      println(Constants.playerOneWon)
     } else if (winner(Two)(board)) {
-      println(playerTwoWon)
+      println(Constants.playerTwoWon)
     } else {
-      println(draw)
+      println(Constants.draw)
     }
   }
 
