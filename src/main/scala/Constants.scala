@@ -10,4 +10,5 @@ object Constants {
   val draw = "It's a draw or I wrote bad code!"
   val maxBoardSize = 15
   val newline = "\n"
+  val choseStartingPlayer = "Who starts? (1 - you, 2 - computer): "
 }

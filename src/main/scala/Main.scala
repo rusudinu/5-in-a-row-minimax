@@ -113,30 +113,43 @@ object Main {
     print(Constants.welcomeMessage + Constants.newline + Constants.boardSizePrompt)
     val boardSize = readLine().toInt
 
+    print(Constants.choseStartingPlayer)
+    val startingPlayer = readLine().toInt
+    val aiStarts = startingPlayer == 2
+
     if (boardSize < 5 && boardSize < Constants.maxBoardSize) {
       println(Constants.boardSizeError)
       game()
     }
 
     var board = makeBoard(boardSize)
-
+    var canPredict = true
     while (!winner(One)(board) && !winner(Two)(board)) {
       breakable {
+        if (aiStarts && canPredict) {
+          board = predictNextBestMove(One)(board)
+          println(show(board))
+        }
+        canPredict = true
         print(Constants.movePrompt)
         val Array(x, y) = readLine().split(" ").map(_.toInt)
         if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
           println(Constants.outOfBoundsError)
           println(show(board))
+          canPredict = false
           break
         }
         if (!isFree(x, y, board)) {
           println(Constants.notFreeError)
           println(show(board))
+          canPredict = false
           break
         }
-        board = update(One)(x, y, board)
-        board = predictNextBestMove(Two)(board)
-        println(show(board))
+        board = update(if (aiStarts) Two else One)(x, y, board)
+        if (!aiStarts) {
+          board = predictNextBestMove(Two)(board)
+          println(show(board))
+        }
       }
     }
 
