@@ -2,6 +2,7 @@ import AI.predictNextBestMove
 import BoardUtils.{display, isFree, makeBoard, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
+import Trace.printTraces
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -66,6 +67,7 @@ object Game {
       }
     }
 
+    printTraces()
     if (stop) {
       //TODO show what player had the advantage
       println(stoppedEarly)
