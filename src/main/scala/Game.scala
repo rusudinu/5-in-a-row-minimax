@@ -1,6 +1,6 @@
 import AI.predictNextBestMove
 import BoardUtils.{display, isFree, makeBoard, update, winner}
-import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon}
+import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
 
 import scala.io.StdIn.readLine
@@ -11,6 +11,7 @@ object Game {
     val (boardSize, usingNaturalCoordinates, aiStarts) = init
 
     var canPredict = true
+    var stop = false
 
     if (boardSize < 5 && boardSize < maxBoardSize) {
       println(boardSizeError)
@@ -19,7 +20,7 @@ object Game {
 
     var board = makeBoard(boardSize)
 
-    while (!winner(One)(board) && !winner(Two)(board)) {
+    while (!winner(One)(board) && !winner(Two)(board) && !stop) {
       breakable {
         if (aiStarts && canPredict) {
           board = predictNextBestMove(One)(board)
@@ -29,6 +30,12 @@ object Game {
         print(movePrompt)
 
         val input: String = readLine()
+
+        if (input == "exit" || input == "quit" || input == "q" || input == "e") {
+          stop = true
+          break
+        }
+
         if (!input.contains(" ")) {
           display(invalidInput, board)
           canPredict = false
@@ -59,6 +66,11 @@ object Game {
       }
     }
 
+    if (stop) {
+      //TODO show what player had the advantage
+      println(stoppedEarly)
+      return
+    }
     if (winner(One)(board)) {
       println(playerOneWon)
     } else {
