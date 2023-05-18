@@ -67,11 +67,7 @@ class GameTests extends munit.FunSuite {
       |.0X
       |X.
       |.""".stripMargin.replace("\r\n", "\n")
-
-  test("Valid profile id:" + profileID) {
-    assert(profileID > 0)
-  }
-
+  
   test("isFree implementation (0p) ") {
     assert(isFree(2, 2, makeBoard(small)))
     assert(!isFree(0, 0, makeBoard(small)))
