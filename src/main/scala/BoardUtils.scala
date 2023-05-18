@@ -2,6 +2,9 @@ import Constants.newline
 
 // TODO AT THE END FILTER OUT LEFTOVER UNUSED FUNCTIONS
 object BoardUtils {
+  var latestX: Int = -1
+  var latestY: Int = -1
+
   type Line = List[Player]
   type Board = List[Line]
 
@@ -16,14 +19,18 @@ object BoardUtils {
     s.split(newline).toList.map(_.toList.map(toPos))
   }
 
-  def display(b: Board): Unit =
-    println(toString(b))
+  def display(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): Unit =
+    println(toString(b, colorLatestMove, colorPlayers))
 
   def display(message: String, b: Board): Unit = {
     println(message)
     display(b)
   }
 
+  def setLastMove(x: Int, y: Int): Unit = {
+    latestX = x
+    latestY = y
+  }
 
   // checks if the position (x,y) board b is free
   def isFree(x: Int, y: Int, b: Board): Boolean = b(x)(y).equals(Empty)
@@ -87,7 +94,6 @@ object BoardUtils {
   def update(p: Player)(ln: Int, col: Int, b: Board): Board =
     b.updated(ln, b(ln).updated(col, p))
 
-
   /*
    * generates one possible next move for player p. Hint - use "isFree" and "update"
    *
@@ -102,14 +108,24 @@ object BoardUtils {
     List.fill(size)(List.fill(size)(Empty))
   }
 
-  def toString(b: Board): String = {
-    def toChar(p: Player): Char =
+  def toString(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): String = {
+    def toChar(p: Player, omitColoring: Boolean = false): String =
       p match {
-        case One => 'X'
-        case Two => '0'
-        case _ => '.'
+        case One => if (colorPlayers && !omitColoring) Console.YELLOW + 'X' + Console.RESET else "X"
+        case Two => if (colorPlayers && !omitColoring) Console.BLUE + '0' + Console.RESET else "0"
+        case _ => "."
       }
 
-    b.map(_.map(toChar).mkString).mkString(newline)
+    if (colorLatestMove) {
+      b.zipWithIndex.map {
+        case (line, x) =>
+          line.zipWithIndex.map {
+            case (player, y) =>
+              if (x == latestX && y == latestY) Console.RED + toChar(player, omitColoring = true) + Console.RESET
+              else toChar(player)
+          }.mkString
+      }.mkString(newline)
+    } else
+      b.map(_.map(toChar(_)).mkString).mkString(newline)
   }
 }

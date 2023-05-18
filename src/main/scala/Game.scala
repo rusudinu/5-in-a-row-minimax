@@ -1,5 +1,5 @@
 import AI.predictNextBestMove
-import BoardUtils.{display, isFree, makeBoard, update, winner}
+import BoardUtils.{display, isFree, makeBoard, setLastMove, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
 import Trace.printTraces
@@ -60,6 +60,7 @@ object Game {
           break
         }
         board = update(if (aiStarts) Two else One)(x, y, board)
+        setLastMove(x, y) // TODO do this for the AI too
         if (!aiStarts) {
           board = predictNextBestMove(Two)(board)
           display(board)
