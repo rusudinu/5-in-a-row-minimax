@@ -132,7 +132,15 @@ object Main {
         }
         canPredict = true
         print(Constants.movePrompt)
-        val Array(x, y) = readLine().split(" ").map(_.toInt)
+        // TODO allow the user to use 'natural' coordinates, and just subtract 1 from both of them
+        val input: String = readLine()
+        if (!input.contains(" ")) {
+          println(Constants.invalidInput)
+          println(show(board))
+          canPredict = false
+          break
+        }
+        val Array(x, y) = input.split(" ").map(_.toInt)
         if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
           println(Constants.outOfBoundsError)
           println(show(board))

@@ -11,4 +11,5 @@ object Constants {
   val maxBoardSize = 15
   val newline = "\n"
   val choseStartingPlayer = "Who starts? (1 - you, 2 - computer): "
+  val invalidInput = "Your input is not valid. It should be in the form of X Y, where X is the X index and Y is the Y index, with a space between."
 }
