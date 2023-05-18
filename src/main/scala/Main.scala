@@ -113,6 +113,9 @@ object Main {
     print(Constants.welcomeMessage + Constants.newline + Constants.boardSizePrompt)
     val boardSize = readLine().toInt
 
+    print(Constants.naturalCoordinatesPrompt)
+    val usingNaturalCoordinates = readLine().toLowerCase == "y"
+
     print(Constants.choseStartingPlayer)
     val startingPlayer = readLine().toInt
     val aiStarts = startingPlayer == 2
@@ -132,7 +135,7 @@ object Main {
         }
         canPredict = true
         print(Constants.movePrompt)
-        // TODO allow the user to use 'natural' coordinates, and just subtract 1 from both of them
+
         val input: String = readLine()
         if (!input.contains(" ")) {
           println(Constants.invalidInput)
@@ -140,7 +143,13 @@ object Main {
           canPredict = false
           break
         }
-        val Array(x, y) = input.split(" ").map(_.toInt)
+
+        val Array(x, y) = input.split(" ").map(
+          if (usingNaturalCoordinates)
+            _.toInt - 1
+          else _.toInt
+        )
+
         if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
           println(Constants.outOfBoundsError)
           println(show(board))
