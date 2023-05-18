@@ -28,6 +28,7 @@ object BoardUtils {
   }
 
   def setLastMove(x: Int, y: Int): Unit = {
+    // can make some sort of diff between the last board and current board
     latestX = x
     latestY = y
   }
