@@ -74,6 +74,7 @@ object Game {
       println(stoppedEarly)
       return
     }
+    // TODO color the winning line
     if (winner(One)(board)) {
       println(playerOneWon)
     } else {
