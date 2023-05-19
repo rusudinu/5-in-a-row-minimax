@@ -102,8 +102,59 @@ object BoardUtils {
   def next(p: Player)(b: Board): List[Board] =
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
-  def sequences(p: Player)(b: Board): Map[Int, Int] =
-    (for (i <- 2 to 5) yield (i, b.count(_.count(_ == p) == i))).toMap
+  def sequences(p: Player)(b: Board): Map[Int, Int] = {
+    // se uita la fiecare segment de 5 pozitii consecutive pe fiecare linie
+    // am k pozitii, restul de 5-k sunt libere? => k secventa
+    // for (i <- 2 until 5)
+    // if b(j).count(_ == p) == i && b(j).count(_ == Empty) == 5 - i
+    // return an empty map
+    Map()
+  }
+
+  /*
+  b.exists(_.count(_ == p) >= 5) ||
+    getColumns(b).exists(_.count(_ == p) >= 5) ||
+    getFstDiag(b).count(_ == p) >= 5 ||
+    getSndDiag(b).count(_ == p) >= 5 ||
+    getAboveFstDiag(b).exists(_.count(_ == p) >= 5) ||
+    getBelowFstDiag(b).exists(_.count(_ == p) >= 5) ||
+    getAboveSndDiag(b).exists(_.count(_ == p) >= 5) ||
+    getBelowSndDiag(b).exists(_.count(_ == p) >= 5)
+   */
+
+  def scoreBoard(p: Player)(b: Board): Int = {
+    b.foldLeft(0) {
+      case (score, line) => score + scoreLine(p)(line)
+    } + getColumns(b).foldLeft(0) {
+      case (score, line) => score + scoreLine(p)(line)
+    } + scoreLine(p)(getFstDiag(b)) + scoreLine(p)(getSndDiag(b)) +
+      getAboveFstDiag(b).foldLeft(0) {
+        case (score, line) => score + scoreLine(p)(line)
+      } + getBelowFstDiag(b).foldLeft(0) {
+      case (score, line) => score + scoreLine(p)(line)
+    } + getAboveSndDiag(b).foldLeft(0) {
+      case (score, line) => score + scoreLine(p)(line)
+    } + getBelowSndDiag(b).foldLeft(0) {
+      case (score, line) => score + scoreLine(p)(line)
+    }
+  }
+
+  def scoreLine(p: Player)(l: Line): Int = {
+    l.sliding(5).foldLeft(0) {
+      case (score, window) =>
+        val consecutive = window.foldLeft(0) {
+          case (consecutive, p) =>
+            if (p == Empty) consecutive
+            else if (p == complement(p)) 0
+            else consecutive + 1
+        } * 2
+        val playerPositions = window.count(_ == p)
+        val empty = window.count(_ == Empty)
+        val enemyConsecutive = window.count(_ == complement(p))
+        val emptyNearConsecutive = 0 // TODO compute this
+        score + consecutive + empty + playerPositions + emptyNearConsecutive - enemyConsecutive
+    }
+  }
 
   def makeBoard(size: Int): Board = {
     List.fill(size)(List.fill(size)(Empty))
