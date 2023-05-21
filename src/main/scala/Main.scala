@@ -1,4 +1,4 @@
-import BoardUtils.{makeBoard, scoreBoard, scoreLine}
+import BoardUtils.{makeBoard, scoreBoard, sequences}
 import Game.start
 
 object Main {
@@ -44,12 +44,12 @@ object Main {
         |0X0..
         |00X0.
         |XX0.X""".stripMargin.replace("\r\n", "\n")
-    //    println(scoreBoard(One)(makeBoard(test)))
-    //    println(scoreBoard(One)(makeBoard(test2)))
-    //    println(scoreBoard(One)(makeBoard(test3)))
-    //    println(scoreBoard(One)(makeBoard(test4)))
-    //    println(scoreBoard(One)(makeBoard(test5)))
-    //    println(scoreBoard(One)(makeBoard(test6)))
+    println(scoreBoard(One)(makeBoard(test)))
+    println(scoreBoard(One)(makeBoard(test2)))
+    println(scoreBoard(One)(makeBoard(test3)))
+    println(scoreBoard(One)(makeBoard(test4)))
+    println(scoreBoard(One)(makeBoard(test5)))
+    println(scoreBoard(One)(makeBoard(test6)))
     start()
   }
 }

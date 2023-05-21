@@ -20,7 +20,7 @@ object BoardUtils {
   }
 
   def display(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): Unit =
-    println(toString(b, colorLatestMove, colorPlayers))
+    println(toReadable(b, colorLatestMove, colorPlayers))
 
   def display(message: String, b: Board): Unit = {
     println(message)
@@ -103,56 +103,48 @@ object BoardUtils {
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
   def sequences(p: Player)(b: Board): Map[Int, Int] = {
-    // se uita la fiecare segment de 5 pozitii consecutive pe fiecare linie
-    // am k pozitii, restul de 5-k sunt libere? => k secventa
-    // for (i <- 2 until 5)
-    // if b(j).count(_ == p) == i && b(j).count(_ == Empty) == 5 - i
-    // return an empty map
+    // parse each 5 consecutive positions on each line, if i have k positions, are there on the same line 5-k free aswell?
+    // k varies from 2 to 5
+    // if yes, then i have a sequence of k positions
+    // if no, then i have no sequence
+    // return a map from k to the number of sequences of length k
+    /*
+    """00000
+        0000X
+        000..
+        00.0.
+        0X..0"""
+
+    if i have this board, i will have 3 sequences of length 5,
+    0 sequences of length 4, because i can't form a 5 sequence (i have the opponent X on that line aswell)
+    2 sequences of length 3
+     */
+    //    b.sliding(5).foldLeft(Map[Int, Int]())((acc, line) => {
+    //      val k = line.count(_ == p)
+    //      val free = line.count(_ == Empty)
+    //      if (k + free == 5) {
+    //        acc + (k -> (acc.getOrElse(k, 0) + 1))
+    //      } else {
+    //        acc
+    //      }
+    //    })
     Map()
   }
 
-  /*
-  b.exists(_.count(_ == p) >= 5) ||
-    getColumns(b).exists(_.count(_ == p) >= 5) ||
-    getFstDiag(b).count(_ == p) >= 5 ||
-    getSndDiag(b).count(_ == p) >= 5 ||
-    getAboveFstDiag(b).exists(_.count(_ == p) >= 5) ||
-    getBelowFstDiag(b).exists(_.count(_ == p) >= 5) ||
-    getAboveSndDiag(b).exists(_.count(_ == p) >= 5) ||
-    getBelowSndDiag(b).exists(_.count(_ == p) >= 5)
-   */
-
   def scoreBoard(p: Player)(b: Board): Int = {
-    b.foldLeft(0) {
-      case (score, line) => score + scoreLine(p)(line)
-    } + getColumns(b).foldLeft(0) {
-      case (score, line) => score + scoreLine(p)(line)
-    } + scoreLine(p)(getFstDiag(b)) + scoreLine(p)(getSndDiag(b)) +
-      getAboveFstDiag(b).foldLeft(0) {
-        case (score, line) => score + scoreLine(p)(line)
-      } + getBelowFstDiag(b).foldLeft(0) {
-      case (score, line) => score + scoreLine(p)(line)
-    } + getAboveSndDiag(b).foldLeft(0) {
-      case (score, line) => score + scoreLine(p)(line)
-    } + getBelowSndDiag(b).foldLeft(0) {
-      case (score, line) => score + scoreLine(p)(line)
-    }
+    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
   }
 
   def scoreLine(p: Player)(l: Line): Int = {
-    l.sliding(5).foldLeft(0) {
-      case (score, window) =>
-        val consecutive = window.foldLeft(0) {
-          case (consecutive, p) =>
-            if (p == Empty) consecutive
-            else if (p == complement(p)) 0
-            else consecutive + 1
-        } * 2
-        val playerPositions = window.count(_ == p)
-        val empty = window.count(_ == Empty)
-        val enemyConsecutive = window.count(_ == complement(p))
-        val emptyNearConsecutive = 0 // TODO compute this
-        score + consecutive + empty + playerPositions + emptyNearConsecutive - enemyConsecutive
+    val k = l.count(_ == p)
+    val free = l.count(_ == Empty)
+    val kInARowWithFreeSpace = l.foldLeft(0)((acc, pos) => if (pos == p || pos == Empty) acc + 1 else 0)
+    if (kInARowWithFreeSpace >= 5) {
+      kInARowWithFreeSpace * 5 + k * 2 + free
+    } else {
+      0
     }
   }
 
@@ -160,7 +152,7 @@ object BoardUtils {
     List.fill(size)(List.fill(size)(Empty))
   }
 
-  def toString(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): String = {
+  def toReadable(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): String = {
     def toChar(p: Player, omitColoring: Boolean = false): String =
       p match {
         case One => if (colorPlayers && !omitColoring) Console.YELLOW + 'X' + Console.RESET else "X"

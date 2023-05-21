@@ -1,8 +1,12 @@
-import BoardUtils.{Board, next, scoreBoard}
+import BoardUtils.{Board, display, next, scoreBoard}
 import Trace.time
 
 object AI {
-  def predictNextBestMove(p: Player)(b: Board): Board = time("predictNextBestMove") {
-    next(p)(b).maxBy(scoreBoard(p))
+  // using minimax algorithm
+  def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
+    val nextMoves = next(p)(b)
+    val scores = nextMoves.map(scoreBoard(p))
+    println(s"Scores: $scores")
+    nextMoves.maxBy(scoreBoard(p))
   }
 }
