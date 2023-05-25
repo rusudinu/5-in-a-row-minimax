@@ -3,54 +3,42 @@ import Trace.time
 
 object AI {
 
-  private trait MinimaxTree
-
-  private case class Node(score: Int, board: Board, children: List[MinimaxTree]) extends MinimaxTree
-
-  private def scoreBoardWrapper(p: Player)(b: Board): Int = time("score-board") {
+  private def scoreBoardWrapper(p: Player)(b: Board)(maximizing: Boolean): Int = time("score-board") {
     if (winner(p)(b)) {
       Int.MaxValue
     } else if (winner(complement(p))(b)) {
       Int.MinValue
     } else {
-      scoreBoard(p)(b)
+      (if (maximizing) 1 else -1) * (scoreBoard(p)(b) - scoreBoard(complement(p))(b))
     }
   }
 
-  private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean): MinimaxTree = time("minimax") {
-    if (depth == 0 || winner(p)(b)) {
-      Node(scoreBoardWrapper(p)(b), b, Nil)
+  private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean, alpha: Int, beta: Int): Int = time("minimax") {
+    if (depth == 0 || winner(p)(b) || alpha >= beta) {
+      scoreBoardWrapper(p)(b)(maximizing)
     } else {
-      lazy val children = next(p)(b).map(b => minimax(complement(p))(b, depth - 1, !maximizing))
-      if (maximizing) {
-        val maxScore = children.map {
-          case Node(score, _, _) => score
-        }.max
-        Node(maxScore, b, children)
-      } else {
-        val minScore = children.map {
-          case Node(score, _, _) => score
-        }.min
-        Node(minScore, b, children)
-      }
+      next(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
+        (acc, child) => {
+          val (alpha, beta, score) = acc
+          val childScore = minimax(complement(p))(child, depth - 1, !maximizing, alpha, beta)
+          if (maximizing) {
+            (Math.max(childScore, alpha), beta, Math.max(childScore, score))
+          } else {
+            (alpha, Math.min(childScore, beta), Math.min(childScore, score))
+          }
+        }
+      )._3
     }
   }
 
   private def depth(b: Board): Int = time("depth") {
-    Math.min(playedMoves(b) / 2 + 1, 4)
+    //Math.min(playedMoves(b) / 2 + 1, 4)
+    2
   }
 
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    val tree = minimax(p)(b, depth(b), maximizing = true)
-    tree match {
-      case Node(_, _, children) =>
-        children.maxBy {
-          case Node(score, _, _) => score
-        } match {
-          case Node(_, board, _) => board
-        }
-    }
+    next(p)(b).maxBy(b => minimax(complement(p))(b, depth(b), maximizing = false, Int.MinValue, Int.MaxValue))
   }
 
 }
