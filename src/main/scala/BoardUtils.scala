@@ -102,17 +102,29 @@ object BoardUtils {
   def next(p: Player)(b: Board): List[Board] =
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
-//  def sequences(p: Player)(b: Board): Map[Int, Int] = {
-//    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
-//      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
-//    val seqs = for {
-//      line <- lines
-//      i <- 0 to line.length - 5
-//      seq = line.slice(i, i + 5)
-//      if seq.count(_ == p) >= 2 && seq.count(_ == Empty) >= 5 - seq.count(_ == p)
-//    } yield seq.count(_ == p) -> 1
-//    seqs.groupMapReduce(identity)(_ => 1)(_ + _)
-//  }
+  /*
+
+  se uita la fiecare segment de 5 pozitii consecutive pe fiecare linie
+  am k pozitii, restul de 5-k sunt libere? => k secventa
+
+   */
+  def sequences(p: Player)(b: Board): Map[Int, Int] = {
+    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+
+    lines.foldLeft(Map[Int, Int]())((acc, line) => {
+      line.sliding(5).foldLeft(acc)((acc, seq) => {
+        val free = seq.count(_ == Empty)
+        val k = seq.count(_ == p)
+        //        val other = 5 - k - free
+        if (k + free == 5) {
+          acc + (k -> (acc.getOrElse(k, 0) + 1))
+        } else {
+          acc
+        }
+      })
+    })
+  }
 
   def playedMoves(b: Board): Int = b.flatten.count(_ != Empty)
 
@@ -132,9 +144,15 @@ object BoardUtils {
   }
 
   def scoreBoard(p: Player)(b: Board): Int = {
-    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
-      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
-    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
+    val weights = Map(0 -> 0, 1 -> 5, 2 -> 20, 3 -> 50, 4 -> 100, 5 -> 1000)
+    //    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+    //      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+    //    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
+    sequences(p)(b).foldLeft(0)((acc, kv) => {
+      kv match {
+        case (k, v) => acc + weights(k) * v
+      }
+    })
   }
 
 
