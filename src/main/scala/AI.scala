@@ -1,17 +1,27 @@
-import BoardUtils.{Board, complement, next, scoreBoard, winner}
+import BoardUtils.{Board, complement, next, playedMoves, scoreBoard, winner}
 import Trace.time
 
 object AI {
 
-  trait MinimaxTree
+  private trait MinimaxTree
 
-  case class Node(score: Int, board: Board, children: List[MinimaxTree]) extends MinimaxTree
+  private case class Node(score: Int, board: Board, children: List[MinimaxTree]) extends MinimaxTree
 
-  def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean): MinimaxTree = {
-    if (depth == 0 || winner(p)(b)) {
-      Node(scoreBoard(p)(b), b, Nil)
+  private def scoreBoardWrapper(p: Player)(b: Board): Int = time("score-board") {
+    if (winner(p)(b)) {
+      Int.MaxValue
+    } else if (winner(complement(p))(b)) {
+      Int.MinValue
     } else {
-      val children = next(p)(b).map(b => minimax(complement(p))(b, depth - 1, !maximizing))
+      scoreBoard(p)(b)
+    }
+  }
+
+  private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean): MinimaxTree = time("minimax") {
+    if (depth == 0 || winner(p)(b)) {
+      Node(scoreBoardWrapper(p)(b), b, Nil)
+    } else {
+      lazy val children = next(p)(b).map(b => minimax(complement(p))(b, depth - 1, !maximizing))
       if (maximizing) {
         val maxScore = children.map {
           case Node(score, _, _) => score
@@ -26,8 +36,13 @@ object AI {
     }
   }
 
+  private def depth(b: Board): Int = time("depth") {
+    Math.min(playedMoves(b) / 2 + 1, 4)
+  }
+
+
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    val tree = minimax(p)(b, 2, maximizing = true)
+    val tree = minimax(p)(b, depth(b), maximizing = true)
     tree match {
       case Node(_, _, children) =>
         children.maxBy {
@@ -37,4 +52,5 @@ object AI {
         }
     }
   }
+
 }

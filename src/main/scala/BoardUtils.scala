@@ -114,6 +114,7 @@ object BoardUtils {
 //    seqs.groupMapReduce(identity)(_ => 1)(_ + _)
 //  }
 
+  def playedMoves(b: Board): Int = b.flatten.count(_ != Empty)
 
   def scoreLine(p: Player)(l: Line): Int = {
     val k = l.count(_ == p)
