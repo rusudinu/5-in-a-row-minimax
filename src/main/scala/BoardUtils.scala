@@ -102,40 +102,18 @@ object BoardUtils {
   def next(p: Player)(b: Board): List[Board] =
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
-  def sequences(p: Player)(b: Board): Map[Int, Int] = {
-    // parse each 5 consecutive positions on each line, if i have k positions, are there on the same line 5-k free aswell?
-    // k varies from 2 to 5
-    // if yes, then i have a sequence of k positions
-    // if no, then i have no sequence
-    // return a map from k to the number of sequences of length k
-    /*
-    """00000
-        0000X
-        000..
-        00.0.
-        0X..0"""
+//  def sequences(p: Player)(b: Board): Map[Int, Int] = {
+//    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+//      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+//    val seqs = for {
+//      line <- lines
+//      i <- 0 to line.length - 5
+//      seq = line.slice(i, i + 5)
+//      if seq.count(_ == p) >= 2 && seq.count(_ == Empty) >= 5 - seq.count(_ == p)
+//    } yield seq.count(_ == p) -> 1
+//    seqs.groupMapReduce(identity)(_ => 1)(_ + _)
+//  }
 
-    if i have this board, i will have 3 sequences of length 5,
-    0 sequences of length 4, because i can't form a 5 sequence (i have the opponent X on that line aswell)
-    2 sequences of length 3
-     */
-    //    b.sliding(5).foldLeft(Map[Int, Int]())((acc, line) => {
-    //      val k = line.count(_ == p)
-    //      val free = line.count(_ == Empty)
-    //      if (k + free == 5) {
-    //        acc + (k -> (acc.getOrElse(k, 0) + 1))
-    //      } else {
-    //        acc
-    //      }
-    //    })
-    Map()
-  }
-
-  def scoreBoard(p: Player)(b: Board): Int = {
-    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
-      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
-    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
-  }
 
   def scoreLine(p: Player)(l: Line): Int = {
     val k = l.count(_ == p)
@@ -151,6 +129,13 @@ object BoardUtils {
   def makeBoard(size: Int): Board = {
     List.fill(size)(List.fill(size)(Empty))
   }
+
+  def scoreBoard(p: Player)(b: Board): Int = {
+    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
+  }
+
 
   def toReadable(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): String = {
     def toChar(p: Player, omitColoring: Boolean = false): String =

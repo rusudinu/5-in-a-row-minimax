@@ -5,36 +5,36 @@ object AI {
 
   trait MinimaxTree
 
-  case class MinimaxNode(score: Int, board: Board, children: List[MinimaxTree]) extends MinimaxTree
+  case class Node(score: Int, board: Board, children: List[MinimaxTree]) extends MinimaxTree
 
-  case class MinimaxLeaf(score: Int, board: Board) extends MinimaxTree
-
-  def minimax(p: Player)(b: Board): MinimaxTree = time("minimax") {
-    def minimaxHelper(p: Player)(b: Board, depth: Int): MinimaxTree = {
-      if (winner(p)(b) || winner(complement(p))(b) || depth == 0) {
-        MinimaxLeaf(scoreBoard(p)(b), b)
+  def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean): MinimaxTree = {
+    if (depth == 0 || winner(p)(b)) {
+      Node(scoreBoard(p)(b), b, Nil)
+    } else {
+      val children = next(p)(b).map(b => minimax(complement(p))(b, depth - 1, !maximizing))
+      if (maximizing) {
+        val maxScore = children.map {
+          case Node(score, _, _) => score
+        }.max
+        Node(maxScore, b, children)
       } else {
-        val children = next(p)(b).map(minimaxHelper(complement(p))(_, depth - 1))
-        MinimaxNode(scoreBoard(p)(b), b, children)
+        val minScore = children.map {
+          case Node(score, _, _) => score
+        }.min
+        Node(minScore, b, children)
       }
     }
-
-    minimaxHelper(p)(b, 3)
   }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    val tree = minimax(p)(b)
+    val tree = minimax(p)(b, 2, maximizing = true)
     tree match {
-      case MinimaxNode(_, _, children) =>
-        val bestChild = children.maxBy {
-          case MinimaxLeaf(score, _) => score
-          case MinimaxNode(score, _, _) => score
+      case Node(_, _, children) =>
+        children.maxBy {
+          case Node(score, _, _) => score
+        } match {
+          case Node(_, board, _) => board
         }
-        bestChild match {
-          case MinimaxLeaf(_, board) => board
-          case MinimaxNode(_, board, _) => board
-        }
-      case MinimaxLeaf(_, board) => board
     }
   }
 }
