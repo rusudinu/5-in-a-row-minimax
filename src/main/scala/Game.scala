@@ -1,5 +1,5 @@
 import AI.predictNextBestMove
-import BoardUtils.{display, isFree, makeBoard, setLastMove, update, winner}
+import BoardUtils.{display, isFree, makeBoard, scoreBoard, sequences, setLastMove, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
 import Trace.printTraces
@@ -19,7 +19,18 @@ object Game {
       start()
     }
 
-    var board = makeBoard(boardSize)
+    val medium1 =
+      """......
+        |..X.X.
+        |..0X..
+        |..00..
+        |......
+        |......""".stripMargin.replace("\r\n", "\n")
+    var board = makeBoard(medium1)
+    println(sequences(One)(board))
+    println(scoreBoard(One)(board))
+    println(scoreBoard(Two)(board))
+    //var board = makeBoard(boardSize)
 
     while (!winner(One)(board) && !winner(Two)(board) && !stop) {
       breakable {

@@ -102,12 +102,6 @@ object BoardUtils {
   def next(p: Player)(b: Board): List[Board] =
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
-  /*
-
-  se uita la fiecare segment de 5 pozitii consecutive pe fiecare linie
-  am k pozitii, restul de 5-k sunt libere? => k secventa
-
-   */
   def sequences(p: Player)(b: Board): Map[Int, Int] = {
     val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
       getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
@@ -144,10 +138,7 @@ object BoardUtils {
   }
 
   def scoreBoard(p: Player)(b: Board): Int = {
-    val weights = Map(0 -> 0, 1 -> 5, 2 -> 20, 3 -> 50, 4 -> 100, 5 -> 1000)
-    //    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
-    //      getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
-    //    lines.foldLeft(0)((acc, line) => acc + scoreLine(p)(line))
+    val weights = Map(0 -> 0, 1 -> 0, 2 -> 20, 3 -> 80, 4 -> 100, 5 -> 1000)
     sequences(p)(b).foldLeft(0)((acc, kv) => {
       kv match {
         case (k, v) => acc + weights(k) * v
