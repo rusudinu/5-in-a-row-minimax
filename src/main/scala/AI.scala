@@ -1,6 +1,5 @@
 import BoardUtils.{Board, complement, next, scoreBoard, winner}
 import Trace.time
-import scala.collection.parallel.CollectionConverters._
 
 object AI {
 
@@ -38,13 +37,13 @@ object AI {
   }
 
   private def nextWrapper(p: Player)(b: Board)(maximizing: Boolean): List[Board] = {
-    next(p)(b).sortBy(scoreBoardWrapper(p)(_)(maximizing)).take(5)
+    // TODO improve this
+    // .sortBy(scoreBoardWrapper(p)(_)(maximizing)).take(5)
+    next(p)(b)
   }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    //nextWrapper(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
-    // TODO test if working in parallel affects maxBy outcome
-    nextWrapper(p)(b)(maximizing = false).par.maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
+    nextWrapper(p)(b)(maximizing = false).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
   }
 
 }
