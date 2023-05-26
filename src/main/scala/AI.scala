@@ -18,7 +18,7 @@ object AI {
     if (depth == 0 || winner(p)(b) || alpha >= beta) {
       scoreBoardWrapper(p)(b)(maximizing)
     } else {
-      nextWrapper(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
+      nextWrapper(p)(b)(maximizing).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
         (acc, child) => {
           val (alpha, beta, score) = acc
           val childScore = minimax(complement(p))(child, depth - 1, !maximizing, alpha, beta)
@@ -34,17 +34,17 @@ object AI {
 
   private def depth(b: Board): Int = time("depth") {
     //Math.min(playedMoves(b) / 2 + 1, 4)
-    3
+    2
   }
 
-  private def nextWrapper(p: Player)(b: Board): List[Board] = {
-    next(p)(b)
+  private def nextWrapper(p: Player)(b: Board)(maximizing: Boolean): List[Board] = {
+    next(p)(b).sortBy(scoreBoardWrapper(p)(_)(maximizing)).take(5)
   }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
     //nextWrapper(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
     // TODO test if working in parallel affects maxBy outcome
-    nextWrapper(p)(b).par.maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
+    nextWrapper(p)(b)(maximizing = false).par.maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
   }
 
 }
