@@ -38,7 +38,7 @@ object AI {
 
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    next(p)(b).maxBy(b => minimax(complement(p))(b, depth(b), maximizing = false, Int.MinValue, Int.MaxValue))
+    next(p)(b).maxBy(b => minimax(p)(b, depth(b), maximizing = true, Int.MinValue, Int.MaxValue))
   }
 
 }
