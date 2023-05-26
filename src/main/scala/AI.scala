@@ -1,5 +1,6 @@
-import BoardUtils.{Board, complement, next, playedMoves, scoreBoard, winner}
+import BoardUtils.{Board, complement, next, scoreBoard, winner}
 import Trace.time
+import scala.collection.parallel.CollectionConverters._
 
 object AI {
 
@@ -17,7 +18,7 @@ object AI {
     if (depth == 0 || winner(p)(b) || alpha >= beta) {
       scoreBoardWrapper(p)(b)(maximizing)
     } else {
-      next(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
+      nextWrapper(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
         (acc, child) => {
           val (alpha, beta, score) = acc
           val childScore = minimax(complement(p))(child, depth - 1, !maximizing, alpha, beta)
@@ -33,12 +34,17 @@ object AI {
 
   private def depth(b: Board): Int = time("depth") {
     //Math.min(playedMoves(b) / 2 + 1, 4)
-    2
+    3
   }
 
+  private def nextWrapper(p: Player)(b: Board): List[Board] = {
+    next(p)(b)
+  }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    next(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
+    //nextWrapper(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
+    // TODO test if working in parallel affects maxBy outcome
+    nextWrapper(p)(b).par.maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
   }
 
 }

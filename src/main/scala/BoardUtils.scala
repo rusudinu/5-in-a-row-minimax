@@ -1,4 +1,5 @@
 import Constants.newline
+import Trace.time
 
 // TODO AT THE END FILTER OUT LEFTOVER UNUSED FUNCTIONS
 object BoardUtils {
@@ -99,18 +100,20 @@ object BoardUtils {
    * generates one possible next move for player p. Hint - use "isFree" and "update"
    *
    * */
-  def next(p: Player)(b: Board): List[Board] =
+  def next(p: Player)(b: Board): List[Board] = time("next") {
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
+  }
 
-  def sequences(p: Player)(b: Board): Map[Int, Int] = {
-    val lines = b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
+  def boardLines(b: Board): List[Line] = time("board-lines") {
+    b ++ getColumns(b) ++ List(getFstDiag(b)) ++ List(getSndDiag(b)) ++
       getAboveFstDiag(b) ++ getBelowFstDiag(b) ++ getAboveSndDiag(b) ++ getBelowSndDiag(b)
+  }
 
-    lines.foldLeft(Map[Int, Int]())((acc, line) => {
+  def sequences(p: Player)(b: Board): Map[Int, Int] = time("sequences") {
+    boardLines(b).foldLeft(Map[Int, Int]())((acc, line) => {
       line.sliding(5).foldLeft(acc)((acc, seq) => {
         val free = seq.count(_ == Empty)
         val k = seq.count(_ == p)
-        //        val other = 5 - k - free
         if (k + free == 5) {
           acc + (k -> (acc.getOrElse(k, 0) + 1))
         } else {
@@ -120,18 +123,11 @@ object BoardUtils {
     })
   }
 
-  def playedMoves(b: Board): Int = b.flatten.count(_ != Empty)
-
-  def scoreLine(p: Player)(l: Line): Int = {
-    val k = l.count(_ == p)
-    val free = l.count(_ == Empty)
-    val kInARowWithFreeSpace = l.foldLeft(0)((acc, pos) => if (pos == p || pos == Empty) acc + 1 else 0)
-    if (kInARowWithFreeSpace >= 5) {
-      kInARowWithFreeSpace * 5 + k * 2 + free
-    } else {
-      0
-    }
+  def emptyLines(b: Board): Int = time("empty-lines") {
+    boardLines(b).count(_.forall(_ == Empty))
   }
+
+  def playedMoves(b: Board): Int = b.flatten.count(_ != Empty)
 
   def makeBoard(size: Int): Board = {
     List.fill(size)(List.fill(size)(Empty))
