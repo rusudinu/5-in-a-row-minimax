@@ -1,5 +1,6 @@
 import BoardUtils.{Board, complement, next, scoreBoard, winner}
 import Trace.time
+import scalaz.Memo
 
 object AI {
 
@@ -17,7 +18,7 @@ object AI {
     if (depth == 0 || winner(p)(b) || alpha >= beta) {
       scoreBoardWrapper(p)(b)(maximizing)
     } else {
-      nextWrapper(p)(b)(maximizing).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
+      next(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
         (acc, child) => {
           val (alpha, beta, score) = acc
           val childScore = minimax(complement(p))(child, depth - 1, !maximizing, alpha, beta)
@@ -36,14 +37,10 @@ object AI {
     2
   }
 
-  private def nextWrapper(p: Player)(b: Board)(maximizing: Boolean): List[Board] = time("next-wrapper") {
-    // TODO improve this
-    // .sortBy(scoreBoardWrapper(p)(_)(maximizing)).take(5)
-    next(p)(b).sortBy(scoreBoard(p)(_))
-  }
+
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
-    nextWrapper(p)(b)(maximizing = false).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
+    next(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
   }
 
 }
