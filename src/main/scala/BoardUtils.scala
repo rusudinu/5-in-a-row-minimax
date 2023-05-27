@@ -77,15 +77,45 @@ object BoardUtils {
 
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
-  def winner(p: Player)(b: Board): Boolean =
-    b.exists(_.count(_ == p) >= 5) ||
-      getColumns(b).exists(_.count(_ == p) >= 5) ||
-      getFstDiag(b).count(_ == p) >= 5 ||
-      getSndDiag(b).count(_ == p) >= 5 ||
-      getAboveFstDiag(b).exists(_.count(_ == p) >= 5) ||
-      getBelowFstDiag(b).exists(_.count(_ == p) >= 5) ||
-      getAboveSndDiag(b).exists(_.count(_ == p) >= 5) ||
-      getBelowSndDiag(b).exists(_.count(_ == p) >= 5)
+  def winner(p: Player)(b: Board): Boolean = time("winner") {
+
+    def helper(line: List[Player]): Boolean = {
+      line match {
+        case a :: b :: c :: d :: e if a == b && b == c && c == d && d == e && e == p =>
+          true
+        case _ :: a :: b :: c :: d :: e if a == b && b == c && c == d && d == e && e == p =>
+          true
+        case _ :: a :: b :: c :: d :: e :: _ if a == b && b == c && c == d && d == e && e == p =>
+          true
+        case a :: b :: c :: d :: e :: _ if a == b && b == c && c == d && d == e && e == p =>
+          true
+        case _ =>
+          false
+      }
+    }
+
+
+    b.exists(line => {
+      helper(line)
+    }) ||
+      getColumns(b).exists(line => {
+        helper(line)
+      }) ||
+      getAboveFstDiag(b).exists(line => {
+        helper(line)
+      }) ||
+      getAboveSndDiag(b).exists(line => {
+        helper(line)
+      }) ||
+      getBelowSndDiag(b).exists(line => {
+        helper(line)
+      }) ||
+      getBelowFstDiag(b).exists(line => {
+        helper(line)
+      }) ||
+      helper(getFstDiag(b)) ||
+      helper(getSndDiag(b))
+  }
 
   /*
    * Write a function which updates a position (with a player) at given indices from the board.

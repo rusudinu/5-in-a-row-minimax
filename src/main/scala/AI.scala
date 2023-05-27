@@ -36,10 +36,10 @@ object AI {
     2
   }
 
-  private def nextWrapper(p: Player)(b: Board)(maximizing: Boolean): List[Board] = {
+  private def nextWrapper(p: Player)(b: Board)(maximizing: Boolean): List[Board] = time("next-wrapper") {
     // TODO improve this
     // .sortBy(scoreBoardWrapper(p)(_)(maximizing)).take(5)
-    next(p)(b)
+    next(p)(b).sortBy(scoreBoard(p)(_))
   }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
