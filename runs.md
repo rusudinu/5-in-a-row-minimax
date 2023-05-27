@@ -59,3 +59,13 @@ board-lines: 0ms = 5845 ns | 169268 times, total time = 989ms
 predict-next-best-move: 84999ms = 84999526500 ns | 2 times, total time = 169999ms
 next: 0ms = 26642 ns | 1062 times, total time = 28ms
 depth: 0ms = 682 ns | 46 times, total time = 0ms
+
+### Memoized score-board
+winner: 0ms = 7891 ns | 34918 times, total time = 275ms
+score-board: 0ms = 577208 ns | 16560 times, total time = 9558ms
+sequences: 0ms = 101101 ns | 33120 times, total time = 3348ms
+minimax: 1ms = 1084379 ns | 34904 times, total time = 37849ms
+board-lines: 0ms = 6799 ns | 33120 times, total time = 225ms
+predict-next-best-move: 3458ms = 3458977375 ns | 4 times, total time = 13835ms
+next: 0ms = 16736 ns | 1788 times, total time = 29ms
+depth: 0ms = 667 ns | 84 times, total time = 0ms

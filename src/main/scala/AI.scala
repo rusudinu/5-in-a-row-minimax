@@ -16,7 +16,7 @@ object AI {
 
   private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean, alpha: Int, beta: Int): Int = time("minimax") {
     if (depth == 0 || winner(p)(b) || alpha >= beta) {
-      scoreBoardWrapper(p)(b)(maximizing)
+      memoizedScoreBoard(p, b, maximizing)
     } else {
       next(p)(b).foldLeft(alpha, beta, if (maximizing) Int.MinValue else Int.MaxValue)(
         (acc, child) => {
@@ -37,7 +37,13 @@ object AI {
     2
   }
 
+  //  private val memoizedMinimax = Memo.mutableHashMapMemo[(Player, Board, Int, Boolean, Int, Int), Int] {
+  //    case (p, b, depth, maximizing, alpha, beta) => minimax(p)(b, depth, maximizing, alpha, beta)
+  //  }
 
+  private val memoizedScoreBoard = Memo.mutableHashMapMemo[(Player, Board, Boolean), Int] {
+    case (p, b, maximizing) => scoreBoardWrapper(p)(b)(maximizing)
+  }
 
   def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
     next(p)(b).maxBy(brd => minimax(complement(p))(brd, depth(brd), maximizing = false, Int.MinValue, Int.MaxValue))
