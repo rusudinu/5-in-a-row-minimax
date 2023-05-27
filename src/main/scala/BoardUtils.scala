@@ -77,14 +77,7 @@ object BoardUtils {
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
   def winner(p: Player)(b: Board): Boolean =
-    b.exists(_.count(_ == p) >= 5) ||
-      getColumns(b).exists(_.count(_ == p) >= 5) ||
-      getFstDiag(b).count(_ == p) >= 5 ||
-      getSndDiag(b).count(_ == p) >= 5 ||
-      getAboveFstDiag(b).exists(_.count(_ == p) >= 5) ||
-      getBelowFstDiag(b).exists(_.count(_ == p) >= 5) ||
-      getAboveSndDiag(b).exists(_.count(_ == p) >= 5) ||
-      getBelowSndDiag(b).exists(_.count(_ == p) >= 5)
+    sequences(p)(b).keys.exists(_ == 5)
 
   /*
    * Write a function which updates a position (with a player) at given indices from the board.
@@ -166,5 +159,16 @@ object BoardUtils {
       }.mkString(newline)
     } else
       b.map(_.map(toChar(_)).mkString).mkString(newline)
+  }
+
+  def show(b: Board): String = {
+    def toChar(p: Player): Char =
+      p match {
+        case One => 'X'
+        case Two => '0'
+        case _ => '.'
+      }
+
+    b.map(_.map(toChar).mkString).mkString(newline)
   }
 }
