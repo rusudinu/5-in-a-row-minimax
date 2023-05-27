@@ -78,50 +78,8 @@ object BoardUtils {
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
   def winner(p: Player)(b: Board): Boolean = time("winner") {
-
-    def helper(line: List[Player]): Boolean = {
-      line match {
-        case a :: b :: c :: d :: e if a == b && b == c && c == d && d == e && e == p =>
-          true
-        case _ :: a :: b :: c :: d :: e if a == b && b == c && c == d && d == e && e == p =>
-          true
-        case _ :: a :: b :: c :: d :: e :: _ if a == b && b == c && c == d && d == e && e == p =>
-          true
-        case a :: b :: c :: d :: e :: _ if a == b && b == c && c == d && d == e && e == p =>
-          true
-        case _ =>
-          false
-      }
-    }
-
-
-    b.exists(line => {
-      helper(line)
-    }) ||
-      getColumns(b).exists(line => {
-        helper(line)
-      }) ||
-      getAboveFstDiag(b).exists(line => {
-        helper(line)
-      }) ||
-      getAboveSndDiag(b).exists(line => {
-        helper(line)
-      }) ||
-      getBelowSndDiag(b).exists(line => {
-        helper(line)
-      }) ||
-      getBelowFstDiag(b).exists(line => {
-        helper(line)
-      }) ||
-      helper(getFstDiag(b)) ||
-      helper(getSndDiag(b))
+    sequences(p)(b).keys.exists(_ == 5)
   }
-
-  /*
-   * Write a function which updates a position (with a player) at given indices from the board.
-   * Your function need not check if the position is empty.
-   * Partial stub - you can remove it if you want to implement it another way
-   */
 
   def update(p: Player)(ln: Int, col: Int, b: Board): Board =
     b.updated(ln, b(ln).updated(col, p))
@@ -192,5 +150,16 @@ object BoardUtils {
       }.mkString(newline)
     } else
       b.map(_.map(toChar(_)).mkString).mkString(newline)
+  }
+
+  def show(b: Board): String = {
+    def toChar(p: Player): Char =
+      p match {
+        case One => 'X'
+        case Two => '0'
+        case _ => '.'
+      }
+
+    b.map(_.map(toChar).mkString).mkString(newline)
   }
 }
