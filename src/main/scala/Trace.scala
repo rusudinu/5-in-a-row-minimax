@@ -15,7 +15,7 @@ object Trace {
   def printTraces(): Unit = {
     println(s"Traces: ${traces.size}")
     traces.foreach { case (traceName, times) =>
-      println(s"$traceName: ${(times.sum / times.length) / 1000000}ms = ${(times.sum / times.length)} ns")
+      println(s"$traceName: ${(times.sum / times.length) / 1000000}ms = ${(times.sum / times.length)} ns | ${times.length} times, total time = ${times.sum / 1000000}ms")
     }
   }
 }
