@@ -37,10 +37,6 @@ object AI {
     2
   }
 
-  //  private val memoizedMinimax = Memo.mutableHashMapMemo[(Player, Board, Int, Boolean, Int, Int), Int] {
-  //    case (p, b, depth, maximizing, alpha, beta) => minimax(p)(b, depth, maximizing, alpha, beta)
-  //  }
-
   private val memoizedScoreBoard = Memo.mutableHashMapMemo[(Player, Board, Boolean), Int] {
     case (p, b, maximizing) => scoreBoardWrapper(p)(b)(maximizing)
   }

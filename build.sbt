@@ -8,7 +8,6 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.3.7"
 )
 
-
 lazy val root = (project in file("."))
   .settings(
     name := "fp-homework-4"

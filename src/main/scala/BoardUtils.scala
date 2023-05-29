@@ -77,9 +77,8 @@ object BoardUtils {
 
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
-  def winner(p: Player)(b: Board): Boolean = time("winner") {
+  def winner(p: Player)(b: Board): Boolean =
     sequences(p)(b).keys.exists(_ == 5)
-  }
 
   def update(p: Player)(ln: Int, col: Int, b: Board): Board =
     b.updated(ln, b(ln).updated(col, p))
