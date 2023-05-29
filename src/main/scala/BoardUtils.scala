@@ -1,10 +1,6 @@
 import Constants.newline
 
-// TODO AT THE END FILTER OUT LEFTOVER UNUSED FUNCTIONS
 object BoardUtils {
-  var latestX: Int = -1
-  var latestY: Int = -1
-
   type Line = List[Player]
   type Board = List[Line]
 
@@ -19,24 +15,16 @@ object BoardUtils {
     s.split(newline).toList.map(_.toList.map(toPos))
   }
 
-  def display(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): Unit =
-    println(toReadable(b, colorLatestMove, colorPlayers))
+  def display(b: Board): Unit =
+    println(toReadable(b))
 
   def display(message: String, b: Board): Unit = {
     println(message)
     display(b)
   }
 
-  def setLastMove(x: Int, y: Int): Unit = {
-    // can make some sort of diff between the last board and current board
-    latestX = x
-    latestY = y
-  }
-
-  // checks if the position (x,y) board b is free
   def isFree(x: Int, y: Int, b: Board): Boolean = b(x)(y).equals(Empty)
 
-  // returns the "other" player from a position, if it exists
   def complement(p: Player): Player = {
     p match {
       case One => Two
@@ -45,20 +33,16 @@ object BoardUtils {
     }
   }
 
-  // Returns a list of columns from a board
   def getColumns(b: Board): Board =
     (for (i <- b.indices) yield (for (j <- b.indices) yield b(j)(i)).toList).toList
 
 
-  //returns the first diagonal as a line
   def getFstDiag(b: Board): Line =
     (for (i <- b.indices) yield b(i)(i)).toList
 
-  //returns the second diagonal as a line
   def getSndDiag(b: Board): Line =
     (for (i <- b.indices) yield b(i)(b.length - i - 1)).toList
 
-  // retrieves all the diagonals above the first line
   def getAboveFstDiag(b: Board): List[Line] =
     (for (i <- 1 until b.length)
       yield (for (j <- 0 until b.length - i)
@@ -74,24 +58,12 @@ object BoardUtils {
     getAboveFstDiag(b.transpose.reverse)
 
 
-  //write a function which checks if a given player is a winner
-  //hints: patterns and exists
   def winner(p: Player)(b: Board): Boolean =
     sequences(p)(b).keys.exists(_ == 5)
-
-  /*
-   * Write a function which updates a position (with a player) at given indices from the board.
-   * Your function need not check if the position is empty.
-   * Partial stub - you can remove it if you want to implement it another way
-   */
 
   def update(p: Player)(ln: Int, col: Int, b: Board): Board =
     b.updated(ln, b(ln).updated(col, p))
 
-  /*
-   * generates one possible next move for player p. Hint - use "isFree" and "update"
-   *
-   * */
   def next(p: Player)(b: Board): List[Board] =
     (for (i <- b.indices; j <- b(i).indices; if isFree(i, j, b)) yield update(p)(i, j, b)).toList
 
@@ -113,19 +85,6 @@ object BoardUtils {
     })
   }
 
-  def playedMoves(b: Board): Int = b.flatten.count(_ != Empty)
-
-  def scoreLine(p: Player)(l: Line): Int = {
-    val k = l.count(_ == p)
-    val free = l.count(_ == Empty)
-    val kInARowWithFreeSpace = l.foldLeft(0)((acc, pos) => if (pos == p || pos == Empty) acc + 1 else 0)
-    if (kInARowWithFreeSpace >= 5) {
-      kInARowWithFreeSpace * 5 + k * 2 + free
-    } else {
-      0
-    }
-  }
-
   def makeBoard(size: Int): Board = {
     List.fill(size)(List.fill(size)(Empty))
   }
@@ -140,25 +99,15 @@ object BoardUtils {
   }
 
 
-  def toReadable(b: Board, colorLatestMove: Boolean = true, colorPlayers: Boolean = true): String = {
-    def toChar(p: Player, omitColoring: Boolean = false): String =
+  def toReadable(b: Board): String = {
+    def toChar(p: Player): String =
       p match {
-        case One => if (colorPlayers && !omitColoring) Console.YELLOW + 'X' + Console.RESET else "X"
-        case Two => if (colorPlayers && !omitColoring) Console.BLUE + '0' + Console.RESET else "0"
+        case One => Console.YELLOW + 'X' + Console.RESET
+        case Two => Console.BLUE + '0' + Console.RESET
         case _ => "."
       }
 
-    if (colorLatestMove) {
-      b.zipWithIndex.map {
-        case (line, x) =>
-          line.zipWithIndex.map {
-            case (player, y) =>
-              if (x == latestX && y == latestY) Console.RED + toChar(player, omitColoring = true) + Console.RESET
-              else toChar(player)
-          }.mkString
-      }.mkString(newline)
-    } else
-      b.map(_.map(toChar(_)).mkString).mkString(newline)
+    b.map(_.map(toChar).mkString).mkString(newline)
   }
 
   def show(b: Board): String = {

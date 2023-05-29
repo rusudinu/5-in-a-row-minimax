@@ -1,8 +1,7 @@
 import AI.predictNextBestMove
-import BoardUtils.{display, isFree, makeBoard, scoreBoard, sequences, setLastMove, update, winner}
+import BoardUtils.{display, isFree, makeBoard, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
-import Trace.printTraces
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -19,17 +18,6 @@ object Game {
       start()
     }
 
-    //    val medium1 =
-    //      """......
-    //        |..X.X.
-    //        |..0X..
-    //        |..00..
-    //        |......
-    //        |......""".stripMargin.replace("\r\n", "\n")
-    //    var board = makeBoard(medium1)
-    //    println(sequences(One)(board))
-    //    println(scoreBoard(One)(board))
-    //    println(scoreBoard(Two)(board))
     var board = makeBoard(boardSize)
 
     while (!winner(One)(board) && !winner(Two)(board) && !stop) {
@@ -71,7 +59,6 @@ object Game {
           break
         }
         board = update(if (aiStarts) Two else One)(x, y, board)
-        setLastMove(x, y) // TODO do this for the AI too
         if (!aiStarts) {
           board = predictNextBestMove(Two)(board)
           display(board)
@@ -79,13 +66,10 @@ object Game {
       }
     }
 
-    printTraces()
     if (stop) {
-      //TODO show what player had the advantage
       println(stoppedEarly)
       return
     }
-    // TODO color the winning line
     if (winner(One)(board)) {
       println(playerOneWon)
     } else {
