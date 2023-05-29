@@ -1,5 +1,5 @@
 import AI.predictNextBestMove
-import BoardUtils.{display, isFree, makeBoard, update, winner}
+import BoardUtils.{display, isFree, makeBoard, scoreBoard, sequences, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
 
@@ -19,12 +19,12 @@ object Game {
     }
 
     //    val medium1 =
-    //      """......
-    //        |..X.X.
-    //        |..0X..
-    //        |..00..
-    //        |......
-    //        |......""".stripMargin.replace("\r\n", "\n")
+    //      """X00.0X
+    //        |XXXX0.
+    //        |0.X0..
+    //        |.X0.0.
+    //        |0X..00
+    //        |.....0""".stripMargin.replace("\r\n", "\n")
     //    var board = makeBoard(medium1)
     //    println(sequences(One)(board))
     //    println(scoreBoard(One)(board))
@@ -35,7 +35,7 @@ object Game {
     while (!winner(One)(board) && !winner(Two)(board) && !stop) {
       breakable {
         if (aiStarts && canPredict) {
-          board = predictNextBestMove(One)(board)
+          board = predictNextBestMove(One)(board)(aiStarts)
           display(board)
         }
         canPredict = true
@@ -72,7 +72,7 @@ object Game {
         }
         board = update(if (aiStarts) Two else One)(x, y, board)
         if (!aiStarts) {
-          board = predictNextBestMove(Two)(board)
+          board = predictNextBestMove(Two)(board)(aiStarts)
           display(board)
         }
       }

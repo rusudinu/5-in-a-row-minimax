@@ -91,7 +91,8 @@ object BoardUtils {
   }
 
   def scoreBoard(p: Player)(b: Board): Int = {
-    val weights = Map(0 -> 0, 1 -> 0, 2 -> 20, 3 -> 80, 4 -> 100, 5 -> 1000)
+    // val weights = Map(0 -> 0, 1 -> 0, 2 -> 20, 3 -> 80, 4 -> 100, 5 -> 1000)
+    val weights = Map(0 -> 0, 1 -> 0, 2 -> 10, 3 -> 100, 4 -> 2000, 5 -> 10000)
     sequences(p)(b).foldLeft(0)((acc, kv) => {
       kv match {
         case (k, v) => acc + weights(k) * v
