@@ -34,7 +34,7 @@ object AI {
     case (p, b, maximizing) => scoreBoardWrapper(p)(b)(maximizing)
   }
 
-  def predictNextBestMove(p: Player)(b: Board)(aiStarts: Boolean): Board =
-    next(p)(b).maxBy(brd => minimax(complement(p))(brd, treeDepth, maximizing = aiStarts, Int.MinValue, Int.MaxValue))
+  def predictNextBestMove(p: Player)(b: Board): Board =
+    next(p)(b).maxBy(brd => minimax(complement(p))(brd, treeDepth, maximizing = false, Int.MinValue, Int.MaxValue))
 
 }

@@ -35,7 +35,7 @@ object Game {
     while (!winner(One)(board) && !winner(Two)(board) && !stop) {
       breakable {
         if (aiStarts && canPredict) {
-          board = predictNextBestMove(One)(board)(aiStarts)
+          board = predictNextBestMove(One)(board)
           display(board)
         }
         canPredict = true
@@ -72,7 +72,7 @@ object Game {
         }
         board = update(if (aiStarts) Two else One)(x, y, board)
         if (!aiStarts) {
-          board = predictNextBestMove(Two)(board)(aiStarts)
+          board = predictNextBestMove(Two)(board)
           display(board)
         }
       }
