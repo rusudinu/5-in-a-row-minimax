@@ -9,6 +9,12 @@ characters that are displayed on boot.
 
 The code is written as close as possible to a functional approach.
 
+## Strengths
+
+It's pretty hard to beat, tested against other AIs of similar nature (minimax).
+
+The AI will provide the next move within a maximum of 3 seconds.
+
 ## Faults
 
 The AI seems to be a bit too defensive, and will often not take the opportunity to win the game, but rather block the opponent from winning. This is most notable in the end games, when if for example
