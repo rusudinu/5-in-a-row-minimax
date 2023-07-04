@@ -18,18 +18,6 @@ object Game {
       start()
     }
 
-    //    val medium1 =
-    //      """X00.0X
-    //        |XXXX0.
-    //        |0.X0..
-    //        |.X0.0.
-    //        |0X..00
-    //        |.....0""".stripMargin.replace("\r\n", "\n")
-    //    var board = makeBoard(medium1)
-    //    println(sequences(One)(board))
-    //    println(scoreBoard(One)(board))
-    //    println(scoreBoard(Two)(board))
-
     var board = makeBoard(boardSize)
 
     while (!winner(One)(board) && !winner(Two)(board) && !stop) {
