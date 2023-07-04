@@ -1,4 +1,3 @@
-import BoardUtils.{makeBoard, winner}
 import Game.start
 
 object Main {

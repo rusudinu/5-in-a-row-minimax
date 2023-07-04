@@ -2,6 +2,7 @@ import AI.predictNextBestMove
 import BoardUtils.{display, isFree, makeBoard, scoreBoard, sequences, update, winner}
 import Constants.{boardSizeError, draw, invalidInput, maxBoardSize, movePrompt, notFreeError, outOfBoundsError, playerOneWon, playerTwoWon, stoppedEarly}
 import GameUtils.init
+import Trace.printTraces
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -17,18 +18,6 @@ object Game {
       println(boardSizeError)
       start()
     }
-
-    //    val medium1 =
-    //      """X00.0X
-    //        |XXXX0.
-    //        |0.X0..
-    //        |.X0.0.
-    //        |0X..00
-    //        |.....0""".stripMargin.replace("\r\n", "\n")
-    //    var board = makeBoard(medium1)
-    //    println(sequences(One)(board))
-    //    println(scoreBoard(One)(board))
-    //    println(scoreBoard(Two)(board))
 
     var board = makeBoard(boardSize)
 
@@ -77,7 +66,7 @@ object Game {
         }
       }
     }
-
+    printTraces()
     if (stop) {
       println(stoppedEarly)
       return

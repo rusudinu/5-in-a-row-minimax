@@ -1,10 +1,11 @@
 import BoardUtils.{Board, complement, next, scoreBoard, winner}
 import Constants.treeDepth
+import Trace.time
 import scalaz.Memo
 
 object AI {
 
-  private def scoreBoardWrapper(p: Player)(b: Board)(maximizing: Boolean): Int =
+  private def scoreBoardWrapper(p: Player)(b: Board)(maximizing: Boolean): Int = time("score-board") {
     if (winner(p)(b)) {
       Int.MaxValue
     } else if (winner(complement(p))(b)) {
@@ -12,8 +13,10 @@ object AI {
     } else {
       (if (maximizing) 1 else -1) * (scoreBoard(p)(b) - scoreBoard(complement(p))(b))
     }
+  }
 
-  private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean, alpha: Int, beta: Int): Int =
+
+  private def minimax(p: Player)(b: Board, depth: Int, maximizing: Boolean, alpha: Int, beta: Int): Int = time("minimax") {
     if (depth == 0 || winner(p)(b) || alpha >= beta) {
       memoizedScoreBoard(p, b, maximizing)
     } else {
@@ -29,12 +32,14 @@ object AI {
         }
       )._3
     }
+  }
 
   private val memoizedScoreBoard = Memo.mutableHashMapMemo[(Player, Board, Boolean), Int] {
     case (p, b, maximizing) => scoreBoardWrapper(p)(b)(maximizing)
   }
 
-  def predictNextBestMove(p: Player)(b: Board): Board =
+  def predictNextBestMove(p: Player)(b: Board): Board = time("predict-next-best-move") {
     next(p)(b).maxBy(brd => minimax(complement(p))(brd, treeDepth, maximizing = false, Int.MinValue, Int.MaxValue))
+  }
 
 }
