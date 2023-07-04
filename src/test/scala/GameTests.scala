@@ -92,80 +92,79 @@ class GameTests extends munit.FunSuite {
       |..0..X
       |.0X.X.""".stripMargin.replace("\r\n", "\n")
 
-  test("isFree implementation (0p) ") {
+  test("isFree implementation") {
     assert(isFree(2, 2, makeBoard(small)))
     assert(!isFree(0, 0, makeBoard(small)))
   }
 
-  test("Complement implementation (0p)") {
+  test("Complement implementation") {
     assert(complement(One) == Two)
     assert(complement(Two) == One)
     assert(complement(Empty) == Empty)
   }
 
-  test("Showing a small board (5p)") {
+  test("Showing a small board") {
 
     assert(small == show(makeBoard(small)))
   }
 
-  test("Showing a medium board (15p)") {
+  test("Showing a medium board") {
     assert(medium1 == show(makeBoard(medium1)))
   }
 
-  test("Retrieving the list of columns (0p)") {
+  test("Retrieving the list of columns") {
     assert(getColumns(makeBoard(medium1)) == makeBoard(medium1))
   }
 
-  test("Retrieving the first diagonal (2p)") {
+  test("Retrieving the first diagonal") {
     assert(getFstDiag(makeBoard(medium1)) == List(Two, Two, Two, Two, Two))
   }
 
-  test("Retrieving the second diagonal (2p)") {
+  test("Retrieving the second diagonal") {
     assert(getSndDiag(makeBoard(medium1)) == List(Two, Two, Two, Two, Two))
   }
 
-  test("(A)Elements above fst diagonal 1 (2p)") {
+  test("(A)Elements above fst diagonal 1") {
     assert(show(getAboveFstDiag(makeBoard(medium1))) == aboveFstDiag1)
   }
 
-  test("(A)Elements above fst diagonal 2 (2p)") {
-    //println(show(getAboveFstDiag(makeBoard(medium2))))
+  test("(A)Elements above fst diagonal 2") {
     assert(show(getAboveFstDiag(makeBoard(medium2))) == aboveFstDiag2)
   }
 
-  test("(B)Elements below fst diagonal 1 (2p)") {
+  test("(B)Elements below fst diagonal 1") {
     assert(show(getBelowFstDiag(makeBoard(medium1))) == aboveFstDiag1)
   }
 
-  test("(B)Elements below fst diagonal 2 (2p)") {
+  test("(B)Elements below fst diagonal 2") {
     assert(show(getBelowFstDiag(makeBoard(medium2))) == belowFstDiag2)
   }
 
-  test("(C)Elements above snd diagonal 1 (2p)") {
+  test("(C)Elements above snd diagonal 1") {
     //print(show(getAboveSndDiag(makeBoard(medium1))))
     assert(show(getAboveSndDiag(makeBoard(medium1))) == aboveSndDiag1)
   }
 
-  test("(C)Elements above snd diagonal 2 (2p)") {
+  test("(C)Elements above snd diagonal 2") {
     assert(show(getAboveSndDiag(makeBoard(medium2))) == aboveSndDiag2)
   }
 
-  test("(D)Elements below snd diagonal 1 (2p)") {
+  test("(D)Elements below snd diagonal 1") {
     //println(show(getBelowSndDiag(makeBoard(medium1))))
     assert(show(getBelowSndDiag(makeBoard(medium1))) == belowSndDiag1)
   }
 
-  test("(D)Elements below snd diagonal 2 (2p)") {
+  test("(D)Elements below snd diagonal 2") {
     assert(show(getBelowSndDiag(makeBoard(medium2))) == belowSndDiag2)
   }
 
 
-  test("Winner 1 (5p)") {
+  test("Winner 1") {
     assert(winner(Two)(makeBoard(medium1)))
     assert(!winner(One)(makeBoard(medium1)))
   }
 
-  test("Winner 2 (5p)") {
+  test("Winner 2") {
     assert(winner(Two)(makeBoard(medium2)))
     assert(!winner(One)(makeBoard(medium2)))
   }
@@ -175,7 +174,7 @@ class GameTests extends munit.FunSuite {
       |0X.
       |X..""".stripMargin.replace("\r\n", "\n")
 
-  test("Update 1 (7p)") {
+  test("Update 1") {
     assert(show(update(One)(0, 1, makeBoard(small))) == smallUpd1)
   }
 
@@ -184,7 +183,7 @@ class GameTests extends munit.FunSuite {
       |0X.
       |X.0""".stripMargin.replace("\r\n", "\n")
 
-  test("Update 2 (8p)") {
+  test("Update 2") {
     assert(show(update(Two)(2, 2, makeBoard(small))) == smallUpd2)
   }
 
@@ -193,7 +192,7 @@ class GameTests extends munit.FunSuite {
       |0XX
       |XX0""".stripMargin.replace("\r\n", "\n")
 
-  test("Next 1 (5p)") {
+  test("Next 1") {
     assert(next(Two)(makeBoard(full)) == Nil)
     assert(next(One)(makeBoard(full)) == Nil)
   }
@@ -206,7 +205,7 @@ class GameTests extends munit.FunSuite {
   val nextTestR1 = Set("00.\n0.X\n.X.", "0.0\n0.X\n.X.", "0..\n00X\n.X.", "0..\n0.X\n0X.", "0..\n0.X\n.X0")
   val nextTestR2 = Set("0X.\n0.X\n.X.", "0.X\n0.X\n.X.", "0..\n0XX\n.X.", "0..\n0.X\nXX.", "0..\n0.X\n.XX")
 
-  test("Next 2 (10p)") {
+  test("Next 2") {
     assert(next(Two)(makeBoard(nextTest)).map(show).toSet == nextTestR1)
     assert(next(One)(makeBoard(nextTest)).map(show).toSet == nextTestR2)
   }

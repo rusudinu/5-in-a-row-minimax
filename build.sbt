@@ -9,5 +9,5 @@ libraryDependencies ++= Seq(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "fp-homework-4"
+    name := "5-in-a-row-minimax"
   )
