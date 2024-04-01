@@ -1,4 +1,4 @@
-# Minimax 5 in a row (Gomoku) game
+# Minimax 5 in a row (Go-Moku) game with Alpha-Beta pruning
 
 This is an implementation of minimax with alpha-beta pruning and memoization of the Gomoku game, in Scala.
 
